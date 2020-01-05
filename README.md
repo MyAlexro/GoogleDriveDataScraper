@@ -3,4 +3,4 @@ Get a list of all(or some) of the files in your Drive, useful if you have a larg
 
 ### Usage
 
-After making the files you want in your final list load, press F12, go to the Elements tab in the opened window, copy the Body element, paste it in a txt file and save it
+After making the files you want in your final list load(sometimes they'll load only by selecting them), press F12, go to the Elements tab in the opened window, copy the Body element, paste it in a txt file and save it
