@@ -58,8 +58,8 @@ namespace Google_Drive_data_scraper
             //if program is exectued by command line parse the arguments and set the txtFilePath
             if (args.Length != 0 && args != null)
             {
-                txtFilePath = args[0];
                 ParseAndExecuteArguments(args);
+                txtFilePath = args[0];
             }
             //ask the user for the path
             else
@@ -125,9 +125,12 @@ namespace Google_Drive_data_scraper
             {
                 StartScraping(arguments[1]);
             }
-            if (arguments[2] == "-save")
+            if (arguments.Length > 2)
             {
-                SaveList();
+                if (arguments[2] == "-save")
+                {
+                    SaveList();
+                }
             }
             Environment.Exit(0);
         }
