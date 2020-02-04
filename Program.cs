@@ -58,8 +58,8 @@ namespace Google_Drive_data_scraper
             //if program is exectued by command line parse the arguments and set the txtFilePath
             if (args.Length != 0 && args != null)
             {
-                ParseAndExecuteArguments(args);
                 txtFilePath = args[0];
+                ParseAndExecuteArguments(args);
             }
             //ask the user for the path
             else
@@ -107,14 +107,13 @@ namespace Google_Drive_data_scraper
             #region Save a list of the files
             Console.WriteLine("\nDo you want to export the list of the files in a txt file? It'll be saved on the desktop (Y/N)");
             var resp = Console.ReadKey();
-            if (resp.KeyChar == 'n' && resp.KeyChar == 'N')
+            if (resp.KeyChar == 'n' || resp.KeyChar == 'N')
                 return;
             SaveList();
             #endregion
 
             Environment.Exit(0);
         }
-
 
         /// <summary>
         /// Parses the arguments passed through the command line and executes them
@@ -272,7 +271,7 @@ namespace Google_Drive_data_scraper
                     buffer.Remove(fileInFolder);
                 }
             }
-            missingFilesFromDrive = buffer;
+            missingFilesFromFolder = buffer;
 
             buffer = new List<String>(folderFiles);
             foreach (var fileInDrive in driveFiles)
@@ -282,7 +281,7 @@ namespace Google_Drive_data_scraper
                     buffer.Remove(fileInDrive);
                 }
             }
-            missingFilesFromFolder = buffer;
+            missingFilesFromDrive = buffer;
 
             if (missingFilesFromDrive.Count == 0) missingFilesFromDrive = null;
             if (missingFilesFromFolder.Count == 0) missingFilesFromFolder = null;
