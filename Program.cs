@@ -27,8 +27,9 @@ SOFTWARE.
 [_./(_)(_)(_]|(/,  |__/[ | \/ (/,  |__/(_] | (_]  .__)(_ [ (_][_)(/,[  
           ._|                                                   |        
 
-    After making the files you want in your final list load(sometimes they'll load only by selecting them), press F12, go to the Elements tab in the opened window,
-    copy the Body element, paste it in a txt file and save it
+    Go to the folder where your files are, copy the link in the url bar and paste that link in another tab, after making the files you want in your final 
+    list load(sometimes they'll load only by selecting them), press F12, go to the Elements tab in the opened window, copy the Body element, paste it in 
+    a txt file and save it
 */
 
 using System;
@@ -43,7 +44,7 @@ namespace Google_Drive_data_scraper
 {
     class Program
     {
-        static List<String> fileNames;
+        static List<String> driveFiles;
         static void Main(string[] args)
         {
             #region Print logo
@@ -61,57 +62,16 @@ namespace Google_Drive_data_scraper
                 ParseAndExecuteArguments(args);
                 txtFilePath = args[0];
             }
-            //ask the user for the path
+            //else ask the user for the path
             else
             {
                 Console.Write("\nDrop the txt containing the body tag here or type its path: ");
                 txtFilePath = Console.ReadLine();
+
+                StartScraping(txtFilePath);
+                CompareListsOfFiles();
+                SaveList();
             }
-
-            StartScraping(txtFilePath);
-
-            #region Compares the files and prints the results
-            Console.Write("\nDo you want to compare the list of files to a local folder? (Type the path of the folder if yes, enter if not) \nPath: ");
-            string pathToFolder = Console.ReadLine();
-            if (pathToFolder != String.Empty)
-            {
-                if (Path.HasExtension(pathToFolder) || !Directory.Exists(pathToFolder))
-                {
-                    PrintError("Invalid path");
-                }
-                else
-                {
-                    (List<String> FromFolder, List<String> FromDrive) missingFiles = CompareFiles(pathToFolder, fileNames);
-
-                    if (missingFiles.FromDrive != null)
-                    {
-                        Console.WriteLine("\nThese files are missing from your Drive:");
-                        foreach (var file in missingFiles.FromDrive)
-                        {
-                            Console.WriteLine($"{missingFiles.FromDrive.IndexOf(file) + 1}) {file}");
-                        }
-                    }
-                    if (missingFiles.FromFolder != null)
-                    {
-                        Console.WriteLine($"\nThese files are missing from your folder {Path.GetDirectoryName(pathToFolder)}:");
-                        foreach (var file in missingFiles.FromFolder)
-                        {
-                            Console.WriteLine($"{missingFiles.FromFolder.IndexOf(file) + 1}) {file}");
-                        }
-                    }
-                    Console.ReadLine();
-                }
-            }
-            #endregion
-
-            #region Save a list of the files
-            Console.WriteLine("\nDo you want to export the list of the files in a txt file? It'll be saved on the desktop (Y/N)");
-            var resp = Console.ReadKey();
-            if (resp.KeyChar == 'n' || resp.KeyChar == 'N')
-                return;
-            SaveList();
-            #endregion
-
             Environment.Exit(0);
         }
 
@@ -121,15 +81,26 @@ namespace Google_Drive_data_scraper
         /// <param name="arguments"> Arguments passed to the program</param>
         static void ParseAndExecuteArguments(string[] arguments)
         {
-            if (arguments[0] == "-scrape")
+            if (File.Exists(arguments[0])) //if the txt file has been passed as argument
             {
-                StartScraping(arguments[1]);
+                string txtFilePath = arguments[0];
+                StartScraping(txtFilePath);
+                CompareListsOfFiles();
+                SaveList();
+
             }
-            if (arguments.Length > 2)
+            else //if the arguments are commands given by command line
             {
-                if (arguments[2] == "-save")
+                if (arguments[0] == "-scrape")
                 {
-                    SaveList();
+                    StartScraping(arguments[1]);
+                }
+                if (arguments.Length > 2)
+                {
+                    if (arguments[2] == "-save")
+                    {
+                        SaveList();
+                    }
                 }
             }
             Environment.Exit(0);
@@ -157,10 +128,10 @@ namespace Google_Drive_data_scraper
 
             Console.Write("Scraping data...");
             #region Scraping process      
-            fileNames = new List<string>();
+            driveFiles = new List<string>();
             Thread thr = new Thread(() =>
             {
-                fileNames = FindFilesName(txtFilePath);
+                driveFiles = FindFilesName(txtFilePath);
             });
             thr.IsBackground = true;
             thr.Start();
@@ -173,7 +144,7 @@ namespace Google_Drive_data_scraper
 
             Console.WriteLine("\nFiles:");
             int fileIndex = 1;
-            foreach (var name in fileNames)
+            foreach (var name in driveFiles)
             {
                 Console.WriteLine($"{fileIndex}) {name}");
                 fileIndex++;
@@ -252,11 +223,27 @@ namespace Google_Drive_data_scraper
         /// - List<String> missingFilesFromFolder: files missing from the folder when compared to the drive
         /// - List<String> missingFilesFromDrive: files missing from the drive when compared to the folder
         /// </returns>
-        private static (List<String> missingFilesFromFolder, List<String> missingFilesFromDrive) CompareFiles(string folderPath, List<String> driveFiles)
+        private static void CompareListsOfFiles()
         {
             List<String> buffer = new List<string>();
             List<String> missingFilesFromDrive = new List<string>();
             List<String> missingFilesFromFolder = new List<string>();
+
+            #region Asks if the user wants to compare the drive files with a local folder, if yes asks its path
+            Console.Write("\nDo you want to compare the list of files to a local folder? (Type the path of the folder if yes, enter if not) \nPath: ");
+            string folderPath = Console.ReadLine();
+            if (folderPath != String.Empty)
+            {
+                if (Path.HasExtension(folderPath) || !Directory.Exists(folderPath))
+                {
+                    PrintError("Invalid path");
+                    Console.WriteLine("Retry?(Y/N)");
+                    var prssdKey = Console.ReadKey();
+                    if (prssdKey.KeyChar == 'y' || prssdKey.KeyChar == 'Y')
+                        CompareListsOfFiles();
+                }
+            }
+            #endregion
 
             #region Gets files from the folder
             List<String> folderFiles = new List<string>();
@@ -266,6 +253,7 @@ namespace Google_Drive_data_scraper
             }
             #endregion
 
+            #region Starts comparing the files in the body tag and the local folder
             buffer = new List<String>(driveFiles);
             foreach (var fileInFolder in folderFiles)
             {
@@ -288,8 +276,27 @@ namespace Google_Drive_data_scraper
 
             if (missingFilesFromDrive.Count == 0) missingFilesFromDrive = null;
             if (missingFilesFromFolder.Count == 0) missingFilesFromFolder = null;
+            #endregion
 
-            return (missingFilesFromFolder, missingFilesFromDrive);
+            #region Writes the files missing from the folder and the drive
+            if (missingFilesFromDrive != null)
+            {
+                Console.WriteLine("\nThese files are missing from your Drive:");
+                foreach (var file in missingFilesFromDrive)
+                {
+                    Console.WriteLine($"{missingFilesFromDrive.IndexOf(file) + 1}) {file}");
+                }
+            }
+            if (missingFilesFromFolder != null)
+            {
+                Console.WriteLine($"\nThese files are missing from your folder {Path.GetDirectoryName(folderPath)}:");
+                foreach (var file in missingFilesFromFolder)
+                {
+                    Console.WriteLine($"{missingFilesFromFolder.IndexOf(file) + 1}) {file}");
+                }
+            }
+            #endregion
+            Console.ReadLine();
         }
 
 
@@ -298,11 +305,16 @@ namespace Google_Drive_data_scraper
         /// </summary>
         static void SaveList()
         {
+            Console.WriteLine("\nDo you want to export the list of the files in a txt file? It'll be saved on the desktop (Y/N)");
+            var resp = Console.ReadKey();
+            if (resp.KeyChar == 'n' || resp.KeyChar == 'N')
+                return;
+
             string filesNameTxtPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\GoogleDriveFiles.txt";
             using (StreamWriter sw = File.CreateText(filesNameTxtPath))
             {
                 int fileIndex = 1;
-                foreach (var name in fileNames)
+                foreach (var name in driveFiles)
                 {
                     sw.WriteLine($"{fileIndex}) {name}");
                     fileIndex++;
