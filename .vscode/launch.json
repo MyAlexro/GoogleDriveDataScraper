@@ -15,7 +15,7 @@
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "externalTerminal",
             "stopAtEntry": false,
-            // "args" : [],
+            //"args" : [],
         },
         {
             "name": ".NET Core Attach",

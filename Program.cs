@@ -229,6 +229,7 @@ namespace Google_Drive_data_scraper
             List<String> missingFilesFromDrive = new List<string>();
             List<String> missingFilesFromFolder = new List<string>();
 
+AskPath:
             #region Asks if the user wants to compare the drive files with a local folder, if yes asks its path
             Console.Write("\nDo you want to compare the list of files to a local folder? (Type the path of the folder if yes, enter if not) \nPath: ");
             string folderPath = Console.ReadLine();
@@ -239,8 +240,10 @@ namespace Google_Drive_data_scraper
                     PrintError("Invalid path");
                     Console.WriteLine("Retry?(Y/N)");
                     var prssdKey = Console.ReadKey();
-                    if (prssdKey.KeyChar == 'y' || prssdKey.KeyChar == 'Y')
-                        CompareListsOfFiles();
+                    if (prssdKey.KeyChar != 'n' || prssdKey.KeyChar != 'N') //Wrote "if not equal to n or N" because the user might start writing the path again without reading the prompt asking to input Y or N
+                    {
+                        goto AskPath;
+                    }
                 }
             }
             #endregion
