@@ -310,7 +310,7 @@ AskPath:
         {
             Console.WriteLine("\nDo you want to export the list of the files in a txt file? It'll be saved on the desktop (Y/N)");
             var resp = Console.ReadKey();
-            if (resp.KeyChar == 'n' || resp.KeyChar == 'N')
+            if (resp.KeyChar != 'y' || resp.KeyChar == 'Y')
                 return;
 
             string filesNameTxtPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\GoogleDriveFiles.txt";
