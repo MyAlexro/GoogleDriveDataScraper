@@ -1,5 +1,6 @@
 # GoogleDriveDataScraper <img src="https://github.com/MyAlexro/GoogleDriveDataScraper/blob/master/GoogleDriveDataScraperIcon.png" alt="Imageconverter logo" width="80px">
-Get a list of all(or some) of the files in your Drive, useful if you have a large backup folder but when you compare it with your local folder, *somehow*, some files are missing
+Get a list of all(or some) of the files in your Drive, useful if you have a large backup folder but when you compare it with your local folder, *somehow*, some files are missing.
+This application has been written using the framework .NET Core 3.1
 
 ### Usage
 
