@@ -27,9 +27,10 @@ SOFTWARE.
 [_./(_)(_)(_]|(/,  |__/[ | \/ (/,  |__/(_] | (_]  .__)(_ [ (_][_)(/,[  
           ._|                                                   |        
 
-    Go to the folder where your files are, copy the link in the url bar and paste that link in another tab, after making the files you want in your final 
-    list load(sometimes they'll load only by selecting them), press F12, go to the Elements tab in the opened window, copy the Body element, paste it in 
-    a txt file and save it
+    Go to the folder where your files are and set the view by grid,reload the page or copy the link in the url bar 
+    and paste that link in another tab, after making the files you want in your final list load(sometimes they'll load 
+    only by selecting them) press F12, go to the Elements tab in the opened window, copy the Body element, paste it in 
+    a txt file and save it. Finally drop it on the GoogleDriveDataScraper executable or use it normally
 */
 
 using System;
